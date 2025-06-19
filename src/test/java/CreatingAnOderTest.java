@@ -64,7 +64,8 @@ public class CreatingAnOderTest {
     @Description("Тест: получаем код 200 при создание заказа с ингредиентами")
     public void creatingAnOrderWithIngredientsTest() {
         response = stepOrderTest.creatingAnOrderSteps(token , 8);
-        response.assertThat().statusCode(SC_OK)
+       System.out.println( stepOrderTest.getIngredientsJson(3));
+         response.assertThat().statusCode(SC_OK)
                 .and()
                 .body("success", equalTo(true))
                 .body("name", notNullValue())
@@ -89,7 +90,6 @@ public class CreatingAnOderTest {
         response = stepOrderTest.invalidHashSteps(token);
         response.assertThat().statusCode(SC_INTERNAL_SERVER_ERROR);
     }
-
 
     @After
     public void tearDown() {

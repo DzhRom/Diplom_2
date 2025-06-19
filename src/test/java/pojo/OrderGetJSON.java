@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class OrderGetJSON {
 
-    private String _id;
+    private String id;
     private String name;
     private String type;
     private int proteins;
@@ -19,6 +19,6 @@ public class OrderGetJSON {
     private String image;
     private String image_mobile;
     private String image_large;
-    private int __v;
+    private int v;
 
 }

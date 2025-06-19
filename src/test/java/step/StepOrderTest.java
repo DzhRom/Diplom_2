@@ -4,8 +4,10 @@ import constants.Constants;
 import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
+import pojo.Ingredients;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -27,43 +29,51 @@ public class StepOrderTest {
                 .then();
    }
 
-   @Step("формирование json c N количеством ингредиентов")
-   public String getIngredientsJson(Integer count) {
+   @Step("формирование заказа с N количеством ингредиентов")
+   public List getIngredientsJson(Integer count) {
+       ArrayList<String> ingredientsList = new ArrayList<>();
        response = getIngredients();
-       String ingredient = "";
-       ArrayList<String> ingredients = response.extract().path("data._id");
-       if (count > ingredients.size()) { count = ingredients.size();}
-       if (count <= 0) { return "{ \"ingredients\": [] }"; }
-           for (int i = 0; i < count; i++) {
-               ingredient += " \"" + ingredients.get(i) + "\",";
-           }
-       ingredient = ingredient.substring(0, ingredient.length() - 1);
-       String ingredientJSON = "{ \"ingredients\": [" + ingredient + "] }";
-       return ingredientJSON;
+       ArrayList<String> list = response.extract().path("data._id");
+       if (count > list.size()) { count = list.size();}
+       if (count <= 0) {
+           return ingredientsList;
+       }
+       for (int i = 0; i < count; i++) {
+           ingredientsList.add(list.get(i));
+       }
+       return ingredientsList;
    }
 
    @Step("Создание заказа")
     public ValidatableResponse creatingAnOrderSteps(String token, Integer count) {
+       Ingredients ingredients = new Ingredients();
+       ingredients.setIngredients(getIngredientsJson(count));
+
        return requestSpecification()
                .auth().oauth2(token)
-               .body(getIngredientsJson(count))
+               .body(ingredients)
                .post(Constants.API_POST_CREATING_AN_ORDER)
                .then();
    }
 
    @Step("Создание заказа неавторизованным пользователем")
     public ValidatableResponse creatingAnOrderUnauthorizedUserTest(Integer count) {
+       Ingredients ingredients = new Ingredients();
+       ingredients.setIngredients(getIngredientsJson(count));
+
        return requestSpecification()
-               .body(getIngredientsJson(count))
+               .body(ingredients)
                .post(Constants.API_POST_CREATING_AN_ORDER)
                .then();
    }
 
    @Step("использование невалидного хеша ингредиента")
-    public ValidatableResponse invalidHashSteps(String token) {        ;
+    public ValidatableResponse invalidHashSteps(String token) {
+       Ingredients ingredients = new Ingredients();
+       ingredients.setIngredients(new ArrayList<>(List.of("0011")));
        return requestSpecification()
                .auth().oauth2(token)
-               .body("{ \"ingredients\": [\"000\"] }")
+               .body(ingredients)
                .post(Constants.API_POST_CREATING_AN_ORDER)
                .then();
    }

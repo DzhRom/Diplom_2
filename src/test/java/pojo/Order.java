@@ -3,6 +3,7 @@ package pojo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter
@@ -10,6 +11,7 @@ public class Order {
     private boolean success;
     private List<Object> data;
     private OrderGetJSON orderGetJSON;
+   // private List<String> ingredients;
 
     public Order(boolean success, List<Object> data, OrderGetJSON orderGetJSON) {
         this.success = success;
@@ -17,7 +19,9 @@ public class Order {
         this.orderGetJSON = orderGetJSON;
     }
 
-    public Order()  {}
+    public Order()  {
+     //   ingredients = new ArrayList<>();
+    }
 
     @Override
     public String toString() {
